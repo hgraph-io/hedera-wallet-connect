@@ -20,7 +20,6 @@
 
 import { AccountId, LedgerId } from '@hashgraph/sdk'
 import { EngineTypes, SessionTypes, SignClientTypes } from '@walletconnect/types'
-import QRCodeModal from '@walletconnect/qrcode-modal'
 import { WalletConnectModal } from '@walletconnect/modal'
 
 import SignClient from '@walletconnect/sign-client'
@@ -160,26 +159,6 @@ export class DAppConnector {
    * @param pairingTopic - The pairing topic for the connection (optional).
    * @returns A Promise that resolves when the connection process is complete.
    */
-  public async connectQR(pairingTopic?: string): Promise<void> {
-    return this.abortableConnect(async () => {
-      try {
-        const { uri, approval } = await this.connectURI(pairingTopic)
-        if (!uri) throw new Error('URI is not defined')
-        QRCodeModal.open(uri, () => {
-          throw new Error('User rejected pairing')
-        })
-        await this.onSessionConnected(await approval())
-      } finally {
-        QRCodeModal.close()
-      }
-    })
-  }
-
-  /**
-   * Initiates the WalletConnect connection flow using a QR code.
-   * @param pairingTopic - The pairing topic for the connection (optional).
-   * @returns A Promise that resolves when the connection process is complete.
-   */
   public async openModal(pairingTopic?: string): Promise<void> {
     const { uri, approval } = await this.connectURI(pairingTopic)
     const walletConnectModal = new WalletConnectModal({
@@ -190,40 +169,6 @@ export class DAppConnector {
     const session = await approval()
     await this.onSessionConnected(session)
     walletConnectModal.closeModal()
-  }
-
-  /**
-   * Initiates the WallecConnect connection flow using URI.
-   * @param pairingTopic - The pairing topic for the connection (optional).
-   * @returns A Promise that resolves when the connection process is complete.
-   */
-  public async connect(
-    launchCallback: (uri: string) => void,
-    pairingTopic?: string,
-  ): Promise<void> {
-    return this.abortableConnect(async () => {
-      const { uri, approval } = await this.connectURI(pairingTopic)
-      if (!uri) throw new Error('URI is not defined')
-      launchCallback(uri)
-      const session = await approval()
-      await this.onSessionConnected(session)
-    })
-  }
-
-  private abortableConnect = async <T>(callback: () => Promise<T>): Promise<T> => {
-    return new Promise(async (resolve, reject) => {
-      const pairTimeoutMs = 480_000
-      const timeout = setTimeout(() => {
-        QRCodeModal.close()
-        reject(new Error(`Connect timed out after ${pairTimeoutMs}(ms)`))
-      }, pairTimeoutMs)
-
-      try {
-        return resolve(await callback())
-      } finally {
-        clearTimeout(timeout)
-      }
-    })
   }
 
   /**
