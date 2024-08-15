@@ -33,18 +33,13 @@ export const config = {
   plugins: [
     copy({
       assets: {
-        from: ['src/examples/typescript/**/*.(html|css|ico|jpg|png)'],
-        to: ['./'],
+        from: ['./main.css', './index.html', './dapp/index.html', './wallet/index.html'],
+        to: ['./main.css', './index.html', './dapp/index.html', './wallet/index.html'],
       },
-      watch: true, // for ../dev.mjs
     }),
   ],
-  outdir: 'dist/examples/typescript',
-  entryPoints: [
-    'src/examples/typescript/main.ts',
-    'src/examples/typescript/dapp/main.ts',
-    'src/examples/typescript/wallet/main.ts',
-  ],
+  outdir: 'dist',
+  entryPoints: ['./main.ts', './dapp/main.ts', './wallet/main.ts'],
   define: {
     'process.env.dappUrl': '"https://wc.hgraph.app/dapp/index.html"',
     'process.env.walletUrl': '"https://wallet.wc.hgraph.app/wallet/index.html"',
