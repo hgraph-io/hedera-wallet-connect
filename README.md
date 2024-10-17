@@ -52,29 +52,53 @@ _The relay and this library have different intentions and serve different purpos
 native Hedera integration vs. Ethereum compatability layers to ease developer onboarding for
 those more familiar with the Ethereum ecosystem._
 
-## Set up
+# Usage
 
-To start using WalletConnect, sign up for an account at <https://cloud.walletconnect.com>. You
-will use your project id when initializing client libraries.
+### 1. Create a WalletConnect Project
+Sign up at [WalletConnect Cloud](https://cloud.walletconnect.com) and create a new project. This will generate a unique **Project ID**, which is necessary for authenticating your DApp and tracking API usage. You'll need the **Project ID** when initializing client libraries to securely access WalletConnect services tailored to your project.
 
-It is important to understand core WalletConnect concepts when integrating this library. Please
-reference the [WalletConnect documentation](https://docs.walletconnect.com/2.0/).
+To understand WalletConnect core concepts, please refer to the [WalletConnect documentation](https://docs.walletconnect.com/2.0/).
 
-## Usage
+### 2. Install the Node.js Package
+```bash
+npm install @hashgraph/hedera-wallet-connect
+```
 
-Upon successfully configuring your dApp and/or wallet to manage WalletConnect sessions, you can
-use this library’s functions to easily create and handle requests for the Hedera network.
+### 3. Import Core Library Classes into Your Application
+```ts
+import { DAppConnector, Wallet } from '@hashgraph/hedera-wallet-connect';
+```
 
-### Installation
+### 4. (Optional) Import Utility Functions
+This library provides utility functions to simplify your work. You can find more details about these utilities and their interfaces [here](https://wc.hgraph.app/docs/) in the file `src/lib/shared/utils.ts`.
+```ts
+import type {
+    queryToBase64String,
+    base64StringToQuery,
+    transactionToBase64String,
+    base64StringToTransaction,
+    verifyMessageSignature,
+    ...
+} from '@hashgraph/hedera-wallet-connect';
+```
 
-`npm i --save @hashgraph/hedera-wallet-connect`
+### 5. (Optional) Import TypeScript Types
+In TypeScript applications, you may need to use types provided by the library. You can import the necessary types as shown below:
+```ts
+import type {
+  HederaSessionEvent,
+  HederaJsonRpcMethod,
+  HederaChainId,
+  ...
+} from '@hashgraph/hedera-wallet-connect';
+```
+For more details on TypeScript types and interfaces, visit the [documentation](https://wc.hgraph.app/docs/).
 
-### Example code
+### 6. Explore example code
+To continue further and better understand how to use this library, you can explore some [Example Code](#example-code).
 
-- [Typescript dApp example code](demos/typescript/dapp/main.ts)
-- [Typescript Wallet example code](demos/typescript/wallet/main.ts)
-- [React dApp example code](demos/react-dapp)
 
+# Usage Specification
 
 ### DApps
 
@@ -280,7 +304,12 @@ The dAppConnector is designed to automatically initiate pairing without any need
 action, in case no sessions are noticed and an iframe extension is detected. To capture this
 event and the newly established session, you can utilize the `onSessionIframeCreated` function.
 
-## Demo & docs
+# Example code
+- [Typescript dApp example code](demos/typescript/dapp/main.ts)
+- [Typescript Wallet example code](demos/typescript/wallet/main.ts)
+- [React dApp example code](demos/react-dapp)
+
+# Demo & docs
 
 This repository includes a vanilla html/css/javascript implementation with a dApp and wallet
 example useful for testing and development while integrating WalletConnect and Hedera.
@@ -291,6 +320,6 @@ at <https://wc.hgraph.app/docs/>
 The demo source code lives in `./demos/typescript` and is available at
 <https://wc.hgraph.app>
 
-## Passing tests
+# Passing tests
 
 - `git commit -Ss "the commit message"`
