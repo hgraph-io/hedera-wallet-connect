@@ -8,6 +8,8 @@ jobs:
   publish-canary:
     name: Publish Canary
     runs-on: wallet-tools-linux-medium
+    environment: github-actions
+
     permissions:
       contents: read
 
