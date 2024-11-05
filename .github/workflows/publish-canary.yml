@@ -1,14 +1,13 @@
 name: Publish Canary
 on:
-  pull_request:
-    branches:
-      - main
+  release:
+    types:
+      - prereleased
 
 jobs:
   publish-canary:
     name: Publish Canary
     runs-on: wallet-tools-linux-medium
-    environment: Actions
 
     permissions:
       contents: read
