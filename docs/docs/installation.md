@@ -85,7 +85,7 @@ import { polyfill } from 'react-native-polyfill-globals/src/encoding';
 
 polyfill();
 
-// mock for matchMedia in @walletconnect/modal-core
+// stub for matchMedia in @walletconnect/modal-core
 window.matchMedia = window.matchMedia || (function () {
     return {
         matches: true,
