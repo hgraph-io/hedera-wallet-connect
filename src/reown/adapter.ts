@@ -2,11 +2,10 @@ import { type ChainNamespace, isReownName } from '@reown/appkit-common'
 import { CoreHelperUtil } from '@reown/appkit-core'
 import { AdapterBlueprint } from '@reown/appkit/adapters'
 import { WcHelpersUtil } from '@reown/appkit'
-import { LedgerId } from '@hashgraph/sdk'
 import { ProviderUtil } from '@reown/appkit/store'
 import { BrowserProvider, Contract, formatUnits, JsonRpcSigner, parseUnits } from 'ethers'
-import { HederaWalletConnectProvider } from './providers'
-import { HederaWalletConnectConnector } from './connectors'
+import { HederaProvider } from './providers'
+import { HederaConnector } from './connectors'
 
 type UniversalProvider = Parameters<AdapterBlueprint['setUniversalProvider']>[0]
 
@@ -33,10 +32,10 @@ export class HederaAdapter extends AdapterBlueprint {
 
   public override setUniversalProvider(universalProvider: UniversalProvider): void {
     this.addConnector(
-      new HederaWalletConnectConnector({
+      new HederaConnector({
         provider: universalProvider,
         caipNetworks: this.caipNetworks || [],
-        namespace: this.namespace as 'hedera' | 'eip155',
+        namespace: this.namespace as ChainNamespace,
       }),
     )
   }
@@ -86,11 +85,30 @@ export class HederaAdapter extends AdapterBlueprint {
     return Promise.resolve()
   }
 
-  public async getBalance(): Promise<AdapterBlueprint.GetBalanceResult> {
+  public async getBalance(
+    params: AdapterBlueprint.GetBalanceParams,
+  ): Promise<AdapterBlueprint.GetBalanceResult> {
+    const { address, caipNetwork } = params
+
+    if (!caipNetwork) {
+      return Promise.resolve({
+        balance: '0',
+        decimals: 0,
+        symbol: '',
+      })
+    }
+
+    const accountInfo = await getAccountInfo(
+      caipNetwork.testnet ? LedgerId.TESTNET : LedgerId.MAINNET,
+      address, // accountId or non-long-zero evmAddress
+    )
+
     return Promise.resolve({
-      balance: '0',
-      decimals: 0,
-      symbol: '',
+      balance: accountInfo?.balance
+        ? formatUnits(accountInfo.balance.balance, 8).toString()
+        : '0',
+      decimals: caipNetwork.nativeCurrency.decimals,
+      symbol: caipNetwork.nativeCurrency.symbol,
     })
   }
 
@@ -101,7 +119,7 @@ export class HederaAdapter extends AdapterBlueprint {
     if (!provider) {
       throw new Error('Provider is undefined')
     }
-    const hederaProvider = provider as unknown as HederaWalletConnectProvider
+    const hederaProvider = provider as unknown as HederaProvider
 
     let signature = ''
 
