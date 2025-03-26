@@ -1,10 +1,10 @@
 import { WcHelpersUtil } from '@reown/appkit'
 import { CaipNetwork, CaipNetworkId, ChainNamespace } from '@reown/appkit-common'
-import { ProposalTypes } from '@walletconnect/types'
 import { defineChain } from '@reown/appkit/networks'
 import { Namespace, NamespaceConfig } from '@walletconnect/universal-provider'
-import { HederaJsonRpcMethod } from '../..'
+import { ProposalTypes } from '@walletconnect/types'
 import { mergeArrays, normalizeNamespaces } from '@walletconnect/utils'
+import { HederaJsonRpcMethod } from '../..'
 
 export const hederaNamespace = 'hedera' as ChainNamespace
 
