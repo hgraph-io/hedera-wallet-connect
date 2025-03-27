@@ -102,7 +102,7 @@ export class HederaAdapter extends AdapterBlueprint {
 
     const accountInfo = await getAccountInfo(
       caipNetwork.testnet ? LedgerId.TESTNET : LedgerId.MAINNET,
-      address, // accountId or non-long-zero evmAddress
+      address!, // accountId or non-long-zero evmAddress
     )
 
     return Promise.resolve({

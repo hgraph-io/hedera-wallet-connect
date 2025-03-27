@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'node:events'
 import Client from '@walletconnect/sign-client'
 import { JsonRpcProvider } from '@walletconnect/jsonrpc-provider'
 import { HttpConnection } from '@walletconnect/jsonrpc-http-connection'

@@ -36,5 +36,12 @@
     "@walletconnect/types": "^2.19.1",
     "@walletconnect/utils": "^2.19.1",
     "ethers": "^6.13.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "@reown/walletkit": "^1.2.3",
+    "@walletconnect/modal": "^2.7.0"
   }
 }
