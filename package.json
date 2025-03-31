@@ -1,7 +1,7 @@
 {
   "name": "@hashgraph/hedera-wallet-connect",
-  "version": "1.5.1",
-  "description": "A library to facilitate integrating Hedera with Reown",
+  "version": "2.0.0-beta.1",
+  "description": "A library to facilitate integrating Hedera",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hashgraph/hedera-wallet-connect.git"
@@ -23,7 +23,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "rimraf dist && tsc",
-    "watch": "nodemon --watch src/lib/ --ext ts --exec \"npm run build\"",
+    "watch": "nodemon --watch src/ --ext ts --exec \"npm run build\"",
     "test": "jest",
     "prepublishOnly": "rm -Rf dist && npm run build",
     "prettier:check": "prettier --check ./src/",
