@@ -12,7 +12,7 @@ import type {
   EstimateGasTransactionArgs,
   SendTransactionArgs,
   WriteContractArgs,
-} from '@reown/appkit-core'
+} from '@reown/appkit'
 import UniversalProvider, {
   IProvider,
   RpcProviderMap,

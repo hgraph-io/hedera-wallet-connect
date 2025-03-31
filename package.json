@@ -32,12 +32,8 @@
   "peerDependencies": {
     "@hashgraph/sdk": "^2.61.0",
     "@reown/appkit": "^1.7.1",
-    "@reown/appkit-core": "^1.7.1",
     "@reown/walletkit": "^1.2.3",
     "@walletconnect/modal": "^2.7.0",
-    "@walletconnect/types": "2.19.1",
-    "@walletconnect/universal-provider": "2.19.1",
-    "@walletconnect/utils": "2.19.1",
     "ethers": "^6.13.5"
   },
   "devDependencies": {
