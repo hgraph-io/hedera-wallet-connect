@@ -1,4 +1,4 @@
-import { EventEmitter } from 'node:events'
+import { EventEmitter } from 'events'
 import { CAIPChainIdToLedgerId, DAppSigner } from '../..'
 import { SessionNamespace, RequestParams, IProvider } from '@walletconnect/universal-provider'
 import { SessionTypes } from '@walletconnect/types'
