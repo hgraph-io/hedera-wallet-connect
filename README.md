@@ -1,70 +1,27 @@
 # Overview
 
-This library is the result of Hedera community collaboration to bring Hedera into the
-WalletConnect ecosystem and vice versa.
+Hedera is a public distributed ledger that is EVM compatible. This library provides a reference
+and toolset to integrate Hedera into your dApp using Hedera native services as well as EVM
+compatible tooling.
 
-The goal of this repository is to be a reference for wallets and dApps integrating the
-WalletConnect <> Hedera JSON-RPC reference. Additionally, this library is meant to be included
-in projects supporting WalletConnect and Hedera, providing utility functions useful to
-validating requests and resposes in both the WalletConnect JSON-RPC context as well as the
-Hedera context.
+There are 2 distict paths to integrate Hedera into your app.
 
-A few useful resources include:
+For more information see:
 
-- [HIP-820](https://hips.hedera.com/hip/hip-820)
-- [WalletConnect <> Hedera JSON-RPC spec](https://specs.walletconnect.com/2.0/blockchain-rpc/hedera-rpc).
-
-> WalletConnect brings the ecosystem together by enabling wallets and apps to securely connect
-> and interact.
->
-> -- <cite> https://walletconnect.com
-
-Hedera aims to be:
-
-> The open source public ledger for everyone
->
-> -- <cite> https://hedera.com
+- [Hedera Native: JSON-RPC spec](https://docs.reown.com/advanced/multichain/rpc-reference/hedera-rpc).
+- [Hedera EVM: JSON-RPC Relay](https://docs.hedera.com/hedera/core-concepts/smart-contracts/json-rpc-relay)
+- [@hashgraph/sdk](https://www.npmjs.com/package/@hashgraph/sdk) and provides functions to
+- [Example App](https://github.com/hgraph-io/hedera-app)
+- [Example Wallet](https://github.com/hgraph-io/hedera-wallet)
 
 ---
 
-This package managed by the Hedera community and is intended to be a standard for ecosystem
-wallets and dApp providers utilizing [WalletConnect](https://walletconnect.com) as a their
-communications protocol. It utilizes the
-[`@hashgraph/sdk`](https://www.npmjs.com/package/@hashgraph/sdk) and provides functions to
-facilitate implementing the
-[WalletConnect <> Hedera JSON-RPC spec](https://specs.walletconnect.com/2.0/blockchain-rpc/hedera-rpc)
-which has been defined through the collaborative HIP process in
-[HIP-820](https://hips.hedera.com/hip/hip-820).
+## Getting Started
 
-This library facilitates the implementation of the **WalletConnect <> Hedera Spec** which allows
-wallets and dApps to natively integrate with Hedera. It provides additional, out of network
-functionality with the `hedera_signMessage` function.
+### Path 1: Using Ethereum native tooling
 
-In short, it uses the Hedera javascript SDK to build transactions, serialize them, send to
-wallets for processing and return responses back to dApps.
+### Path 2: Using Hedera native tooling
 
-_Please note, this is distinct from the
-[Implementation of Ethereum JSON-RPC APIs for Hedera](https://github.com/hashgraph/hedera-json-rpc-relay).
-At the time of this writing, "the Hedera JSON-RPC relay implementation is in beta, offers
-limited functionality today, and is only available to developers."_
+### Examples
 
-_The relay and this library have different intentions and serve different purposes - namely
-native Hedera integration vs. Ethereum compatability layers to ease developer onboarding for
-those more familiar with the Ethereum ecosystem._
-
-# Documentation
-
-WalletConnect <> Hedera docs are fully hosted on [https://hwc-docs.hgraph.app/](https://hwc-docs.hgraph.app/)
-
-- [Installation](/docs/docs/installation.md)
-- [dApp Guide](/docs/docs/dapp-guide.md)
-- [Wallet Guide](/docs/docs/wallet-guide.md)
-- [Signing Messages](/docs/docs/sign-messages.md)
-- [Demos](/docs/docs/demos.md)
-
-# Accessing the docs locally
-
-- `cd docs`
-- `npm install`
-- `npm run docs`
-- Navigating to `localhost:3000`
+## Namespaces

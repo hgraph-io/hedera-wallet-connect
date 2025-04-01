@@ -1,7 +1,6 @@
+import { CoreHelperUtil, WcHelpersUtil } from '@reown/appkit'
 import { type ChainNamespace, isReownName } from '@reown/appkit-common'
-import { CoreHelperUtil } from '@reown/appkit-core'
 import { AdapterBlueprint } from '@reown/appkit/adapters'
-import { WcHelpersUtil } from '@reown/appkit'
 import { ProviderUtil } from '@reown/appkit/store'
 import { LedgerId } from '@hashgraph/sdk'
 import { BrowserProvider, Contract, formatUnits, JsonRpcSigner, parseUnits } from 'ethers'
@@ -102,7 +101,7 @@ export class HederaAdapter extends AdapterBlueprint {
 
     const accountInfo = await getAccountInfo(
       caipNetwork.testnet ? LedgerId.TESTNET : LedgerId.MAINNET,
-      address, // accountId or non-long-zero evmAddress
+      address!, // accountId or non-long-zero evmAddress
     )
 
     return Promise.resolve({
@@ -188,7 +187,6 @@ export class HederaAdapter extends AdapterBlueprint {
 
       return { hash: tx }
     } else {
-      // TODO: EthereumTransaction for hedera_signAndExecuteTransaction?
       throw new Error('Namespace is not eip155')
     }
   }

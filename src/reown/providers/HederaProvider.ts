@@ -1,4 +1,24 @@
+import {
+  BrowserProvider,
+  Contract,
+  JsonRpcSigner,
+  TransactionRequest,
+  hexlify,
+  isHexString,
+  toUtf8Bytes,
+} from 'ethers'
 import { CaipNetwork, RequestArguments } from '@reown/appkit'
+import type {
+  EstimateGasTransactionArgs,
+  SendTransactionArgs,
+  WriteContractArgs,
+} from '@reown/appkit'
+import UniversalProvider, {
+  IProvider,
+  RpcProviderMap,
+  UniversalProviderOpts,
+} from '@walletconnect/universal-provider'
+import { Transaction } from '@hashgraph/sdk'
 import {
   GetNodeAddressesResult,
   ExecuteTransactionParams,
@@ -13,27 +33,6 @@ import {
   SignTransactionResult,
   HederaJsonRpcMethod,
 } from '../..'
-import { Transaction } from '@hashgraph/sdk'
-import UniversalProvider, {
-  IProvider,
-  RpcProviderMap,
-  UniversalProviderOpts,
-} from '@walletconnect/universal-provider'
-import {
-  BrowserProvider,
-  Contract,
-  JsonRpcSigner,
-  TransactionRequest,
-  hexlify,
-  isHexString,
-  toUtf8Bytes,
-} from 'ethers'
-import type {
-  EstimateGasTransactionArgs,
-  SendTransactionArgs,
-  WriteContractArgs,
-} from '@reown/appkit-core'
-
 import {
   EthFilter,
   getChainsFromApprovedSession,
@@ -77,7 +76,7 @@ export class HederaProvider extends UniversalProvider {
           }
         : {}),
     }
-
+    if (provider.session) provider.initProviders()
     return provider
   }
 
@@ -250,8 +249,7 @@ export class HederaProvider extends UniversalProvider {
    *
    * @param {SignTransactionParams} params - The parameters of type {@link SignTransactionParams | `SignTransactionParams`} required for `Transaction` signing.
    * @param {string} params.signerAccountId - a signer Hedera Account identifier in {@link https://hips.hedera.com/hip/hip-30 | HIP-30} (`<nework>:<shard>.<realm>.<num>`) form.
-   * @param {Transaction | string} params.transactionBody - a built Transaction object, or a base64 string of a transaction body (deprecated).
-   * @deprecated Using string for params.transactionBody is deprecated and will be removed in a future version. Please migrate to using Transaction objects directly.
+   * @param {Transaction} params.transactionBody - a Transaction object built with the @hgraph/sdk
    * @returns Promise\<{@link SignTransactionResult}\>
    * @example
    * ```ts
@@ -271,40 +269,23 @@ export class HederaProvider extends UniversalProvider {
     if (!this.nativeProvider) {
       throw new Error('nativeProvider not initialized. Please call connect()')
     }
-
-    if (typeof params?.transactionBody === 'string') {
-      this.logger.warn(
-        'Transaction body is a string. This is not recommended, please migrate to passing a transaction object directly.',
+    if (!(params?.transactionBody instanceof Transaction)) {
+      throw new Error(
+        'Transaction sent in incorrect format. Ensure transaction body is a Transaction object.',
       )
-      return await this.request<SignTransactionResult['result']>({
-        method: HederaJsonRpcMethod.SignTransaction,
-        params,
-      })
     }
 
-    if (params?.transactionBody instanceof Transaction) {
-      const signerAccountId = params?.signerAccountId?.split(':')?.pop()
-      const isValidSigner = this.nativeProvider
-        ?.requestAccounts()
-        .includes(signerAccountId ?? '')
+    const signerAccountId = params?.signerAccountId?.split(':')?.pop()
+    const isValidSigner = this.nativeProvider?.requestAccounts().includes(signerAccountId ?? '')
 
-      if (!isValidSigner) {
-        throw new Error(`Signer not found for account ${signerAccountId}`)
-      }
-
-      if (!params?.transactionBody) {
-        throw new Error('No transaction provided')
-      }
-
-      return (await this.nativeProvider.signTransaction(
-        params.transactionBody as Transaction,
-        this.session.topic,
-      ))!
+    if (!isValidSigner) {
+      throw new Error(`Signer not found for account ${signerAccountId}`)
     }
 
-    throw new Error(
-      'Transaction sent in incorrect format. Ensure transaction body is either a base64 transaction body or Transaction object.',
-    )
+    return (await this.nativeProvider.signTransaction(
+      params.transactionBody as Transaction,
+      this.session.topic,
+    ))!
   }
 
   async eth_signMessage(message: string, address: string) {
@@ -538,7 +519,13 @@ export class HederaProvider extends UniversalProvider {
     return await this.request({ method: 'web3_clientVersion', params: [] })
   }
 
-  private getProviders(): Record<string, IProvider> {
+  public async pair(pairingTopic: string | undefined): ReturnType<UniversalProvider['pair']> {
+    const session = await super.pair(pairingTopic)
+    this.initProviders()
+    return session
+  }
+
+  private initProviders(): Record<string, IProvider> {
     if (!this.client) {
       throw new Error('Sign Client not initialized')
     }
@@ -596,7 +583,7 @@ export class HederaProvider extends UniversalProvider {
   // @ts-expect-error - override base rpcProviders logic
   get rpcProviders(): RpcProviderMap {
     if (!this.nativeProvider && !this.eip155Provider) {
-      return this.getProviders()
+      return this.initProviders()
     }
     return {
       hedera: this.nativeProvider!,

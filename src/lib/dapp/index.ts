@@ -642,8 +642,7 @@ export class DAppConnector {
    *
    * @param {SignTransactionParams} params - The parameters of type {@link SignTransactionParams | `SignTransactionParams`} required for `Transaction` signing.
    * @param {string} params.signerAccountId - a signer Hedera Account identifier in {@link https://hips.hedera.com/hip/hip-30 | HIP-30} (`<nework>:<shard>.<realm>.<num>`) form.
-   * @param {Transaction | string} params.transactionBody - a built Transaction object, or a base64 string of a transaction body (deprecated).
-   * @deprecated Using string for params.transactionBody is deprecated and will be removed in a future version. Please migrate to using Transaction objects directly.
+   * @param {Transaction} params.transactionBody - a Transaction object built with the @hashgraph/sdk
    * @returns Promise\<{@link SignTransactionResult}\>
    * @example
    * ```ts

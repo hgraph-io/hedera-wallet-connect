@@ -1,8 +1,8 @@
+import { EventEmitter } from 'events'
 import { CAIPChainIdToLedgerId, DAppSigner } from '../..'
 import { SessionNamespace, RequestParams, IProvider } from '@walletconnect/universal-provider'
 import { SessionTypes } from '@walletconnect/types'
 import { AccountId, Transaction } from '@hashgraph/sdk'
-import { EventEmitter } from 'node:events'
 
 class HIP820Provider implements IProvider {
   events: EventEmitter
