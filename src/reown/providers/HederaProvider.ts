@@ -76,7 +76,8 @@ export class HederaProvider extends UniversalProvider {
           }
         : {}),
     }
-
+    if (provider.session) 
+      provider.initProviders()
     return provider
   }
 
@@ -536,7 +537,13 @@ export class HederaProvider extends UniversalProvider {
     return await this.request({ method: 'web3_clientVersion', params: [] })
   }
 
-  private getProviders(): Record<string, IProvider> {
+  public async pair(pairingTopic: string | undefined): ReturnType<UniversalProvider['pair']> {
+    const session = await super.pair(pairingTopic)
+    this.initProviders()
+    return session
+  }
+
+  private initProviders(): Record<string, IProvider> {
     if (!this.client) {
       throw new Error('Sign Client not initialized')
     }
@@ -594,7 +601,7 @@ export class HederaProvider extends UniversalProvider {
   // @ts-expect-error - override base rpcProviders logic
   get rpcProviders(): RpcProviderMap {
     if (!this.nativeProvider && !this.eip155Provider) {
-      return this.getProviders()
+      return this.initProviders()
     }
     return {
       hedera: this.nativeProvider!,
