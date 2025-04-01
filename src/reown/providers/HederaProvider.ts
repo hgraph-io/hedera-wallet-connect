@@ -76,8 +76,7 @@ export class HederaProvider extends UniversalProvider {
           }
         : {}),
     }
-    if (provider.session) 
-      provider.initProviders()
+    if (provider.session) provider.initProviders()
     return provider
   }
 
@@ -270,40 +269,23 @@ export class HederaProvider extends UniversalProvider {
     if (!this.nativeProvider) {
       throw new Error('nativeProvider not initialized. Please call connect()')
     }
-
-    if (typeof params?.transactionBody === 'string') {
-      this.logger.warn(
-        'Transaction body is a string. This is not recommended, please migrate to passing a transaction object directly.',
+    if (!(params?.transactionBody instanceof Transaction)) {
+      throw new Error(
+        'Transaction sent in incorrect format. Ensure transaction body is a Transaction object.',
       )
-      return await this.request<SignTransactionResult['result']>({
-        method: HederaJsonRpcMethod.SignTransaction,
-        params,
-      })
     }
 
-    if (params?.transactionBody instanceof Transaction) {
-      const signerAccountId = params?.signerAccountId?.split(':')?.pop()
-      const isValidSigner = this.nativeProvider
-        ?.requestAccounts()
-        .includes(signerAccountId ?? '')
+    const signerAccountId = params?.signerAccountId?.split(':')?.pop()
+    const isValidSigner = this.nativeProvider?.requestAccounts().includes(signerAccountId ?? '')
 
-      if (!isValidSigner) {
-        throw new Error(`Signer not found for account ${signerAccountId}`)
-      }
-
-      if (!params?.transactionBody) {
-        throw new Error('No transaction provided')
-      }
-
-      return (await this.nativeProvider.signTransaction(
-        params.transactionBody as Transaction,
-        this.session.topic,
-      ))!
+    if (!isValidSigner) {
+      throw new Error(`Signer not found for account ${signerAccountId}`)
     }
 
-    throw new Error(
-      'Transaction sent in incorrect format. Ensure transaction body is either a base64 transaction body or Transaction object.',
-    )
+    return (await this.nativeProvider.signTransaction(
+      params.transactionBody as Transaction,
+      this.session.topic,
+    ))!
   }
 
   async eth_signMessage(message: string, address: string) {
