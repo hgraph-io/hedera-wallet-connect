@@ -5,6 +5,7 @@ import {
   TransactionRequest,
   hexlify,
   isHexString,
+  toQuantity,
   toUtf8Bytes,
 } from 'ethers'
 import { CaipNetwork, RequestArguments } from '@reown/appkit'
@@ -354,52 +355,55 @@ export class HederaProvider extends UniversalProvider {
     }
     const method = contract[data.method]
     if (method) {
-      return await method(...data.args)
+      return (await method(...data.args)) as string
     }
     throw new Error('Contract method is undefined')
   }
 
   // Returns the latest block number
   async eth_blockNumber() {
-    return await this.request({ method: 'eth_blockNumber', params: [] })
+    return this.request<string>({ method: 'eth_blockNumber', params: [] })
   }
 
   // Executes a call with the given transaction request and block identifier
   async eth_call(tx: TransactionRequest, block: string = 'latest') {
-    return await this.request({ method: 'eth_call', params: [tx, block] })
+    return this.request<string>({ method: 'eth_call', params: [tx, block] })
   }
 
   // Returns fee history data for the given parameters
   async eth_feeHistory(blockCount: number, newestBlock: string, rewardPercentiles: number[]) {
-    return await this.request({
+    return this.request<string>({
       method: 'eth_feeHistory',
-      params: [blockCount, newestBlock, rewardPercentiles],
+      params: [toQuantity(blockCount), newestBlock, rewardPercentiles],
     })
   }
 
   // Returns the current gas price
   async eth_gasPrice() {
-    return await this.request({ method: 'eth_gasPrice', params: [] })
+    return this.request<string>({ method: 'eth_gasPrice', params: [] })
   }
 
   // Returns block details by hash, optionally including full transactions
   async eth_getBlockByHash(hash: string, fullTx: boolean = false) {
-    return await this.request({ method: 'eth_getBlockByHash', params: [hash, fullTx] })
+    return this.request<string>({ method: 'eth_getBlockByHash', params: [hash, fullTx] })
   }
 
   // Returns block details by block number, optionally including full transactions
   async eth_getBlockByNumber(block: string, fullTx: boolean = false) {
-    return await this.request({ method: 'eth_getBlockByNumber', params: [block, fullTx] })
+    return this.request({ method: 'eth_getBlockByNumber', params: [block, fullTx] })
   }
 
   // Returns the number of transactions in a block identified by its hash
   async eth_getBlockTransactionCountByHash(hash: string) {
-    return await this.request({ method: 'eth_getBlockTransactionCountByHash', params: [hash] })
+    return this.request<string>({
+      method: 'eth_getBlockTransactionCountByHash',
+      params: [hash],
+    })
   }
 
   // Returns the number of transactions in a block identified by its number
   async eth_getBlockTransactionCountByNumber(block: string) {
-    return await this.request({
+    return this.request<string>({
       method: 'eth_getBlockTransactionCountByNumber',
       params: [block],
     })
@@ -407,27 +411,27 @@ export class HederaProvider extends UniversalProvider {
 
   // Returns the contract code at the specified address and block
   async eth_getCode(address: string, block: string = 'latest') {
-    return await this.request({ method: 'eth_getCode', params: [address, block] })
+    return this.request<string>({ method: 'eth_getCode', params: [address, block] })
   }
 
   // Returns filter logs based on the provided filter object
-  async eth_getFilterLogs(filter: EthFilter) {
-    return await this.request({ method: 'eth_getFilterLogs', params: [filter] })
+  async eth_getFilterLogs(filterId: string) {
+    return this.request<string>({ method: 'eth_getFilterLogs', params: [filterId] })
   }
 
   // Returns filter changes for the given filter ID
   async eth_getFilterChanges(filterId: string) {
-    return await this.request({ method: 'eth_getFilterChanges', params: [filterId] })
+    return this.request<string>({ method: 'eth_getFilterChanges', params: [filterId] })
   }
 
   // Returns logs based on the provided filter object
   async eth_getLogs(filter: EthFilter) {
-    return await this.request({ method: 'eth_getLogs', params: [filter] })
+    return this.request<string>({ method: 'eth_getLogs', params: [filter] })
   }
 
   // Returns storage data at a specific address and position for a given block
   async eth_getStorageAt(address: string, position: string, block: string = 'latest') {
-    return await this.request({
+    return this.request<string>({
       method: 'eth_getStorageAt',
       params: [address, position, block],
     })
@@ -435,7 +439,7 @@ export class HederaProvider extends UniversalProvider {
 
   // Returns a transaction from a block by its hash and index
   async eth_getTransactionByBlockHashAndIndex(hash: string, index: string) {
-    return await this.request({
+    return await this.request<string>({
       method: 'eth_getTransactionByBlockHashAndIndex',
       params: [hash, index],
     })
@@ -443,7 +447,7 @@ export class HederaProvider extends UniversalProvider {
 
   // Returns a transaction from a block by its number and index
   async eth_getTransactionByBlockNumberAndIndex(block: string, index: string) {
-    return await this.request({
+    return this.request<string>({
       method: 'eth_getTransactionByBlockNumberAndIndex',
       params: [block, index],
     })
@@ -451,72 +455,79 @@ export class HederaProvider extends UniversalProvider {
 
   // Returns transaction details by its hash
   async eth_getTransactionByHash(hash: string) {
-    return await this.request({ method: 'eth_getTransactionByHash', params: [hash] })
+    return this.request<string>({ method: 'eth_getTransactionByHash', params: [hash] })
   }
 
   // Returns the transaction count for a given address and block
   async eth_getTransactionCount(address: string, block: string = 'latest') {
-    return await this.request({ method: 'eth_getTransactionCount', params: [address, block] })
+    return this.request<string>({
+      method: 'eth_getTransactionCount',
+      params: [address, block],
+    })
   }
 
   // Returns the transaction receipt for a given transaction hash
   async eth_getTransactionReceipt(hash: string) {
-    return await this.request({ method: 'eth_getTransactionReceipt', params: [hash] })
+    return this.request<string>({ method: 'eth_getTransactionReceipt', params: [hash] })
   }
 
   // Returns the current hashrate
   async eth_hashrate() {
-    return await this.request({ method: 'eth_hashrate', params: [] })
+    return this.request<string>({ method: 'eth_hashrate', params: [] })
   }
 
   // Returns the max priority fee per gas
   async eth_maxPriorityFeePerGas() {
-    return await this.request({ method: 'eth_maxPriorityFeePerGas', params: [] })
+    return this.request<string>({ method: 'eth_maxPriorityFeePerGas', params: [] })
   }
 
   // Returns the mining status
   async eth_mining() {
-    return await this.request({ method: 'eth_mining', params: [] })
+    return this.request<string>({ method: 'eth_mining', params: [] })
   }
 
   // Creates a new block filter and returns its ID
   async eth_newBlockFilter() {
-    return await this.request({ method: 'eth_newBlockFilter', params: [] })
+    return this.request<string>({ method: 'eth_newBlockFilter', params: [] })
   }
 
   // Creates a new filter based on the provided filter object and returns its ID
   async eth_newFilter(filter: EthFilter) {
-    return await this.request({ method: 'eth_newFilter', params: [filter] })
+    return this.request<string>({ method: 'eth_newFilter', params: [filter] })
   }
 
   // Submits work for mining (dummy parameters) and returns the result
   async eth_submitWork(params: string[]) {
-    return await this.request({ method: 'eth_submitWork', params })
+    return this.request<string>({ method: 'eth_submitWork', params })
   }
 
   // Returns the syncing status
   async eth_syncing() {
-    return await this.request({ method: 'eth_syncing', params: [] })
+    return this.request<string>({ method: 'eth_syncing', params: [] })
   }
 
   // Uninstalls the filter with the given ID
   async eth_uninstallFilter(filterId: string) {
-    return await this.request({ method: 'eth_uninstallFilter', params: [filterId] })
+    return this.request<string>({ method: 'eth_uninstallFilter', params: [filterId] })
   }
 
   // Returns the network listening status
   async net_listening() {
-    return await this.request({ method: 'net_listening', params: [] })
+    return this.request<string>({ method: 'net_listening', params: [] })
   }
 
   // Returns the current network version
   async net_version() {
-    return await this.request({ method: 'net_version', params: [] })
+    return this.request<string>({ method: 'net_version', params: [] })
   }
 
   // Returns the client version string
   async web3_clientVersion() {
-    return await this.request({ method: 'web3_clientVersion', params: [] })
+    return this.request<string>({ method: 'web3_clientVersion', params: [] })
+  }
+
+  async eth_chainId() {
+    return this.request<string>({ method: 'eth_chainId', params: [] })
   }
 
   public async pair(pairingTopic: string | undefined): ReturnType<UniversalProvider['pair']> {
