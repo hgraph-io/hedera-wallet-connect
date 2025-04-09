@@ -10,8 +10,8 @@ compatible API calls into the Hedera gRPC and REST API calls.
 
 When integrating, app developers can choose to use the Hedera native approach and send
 transactions to wallets over the WalletConnect relays using the JSON-RPC spec defined for Hedera
-native transactions or use Ethereum JSON-RPC calls sent to a Hedera JSON-RPC provider that is
-separate from the Hedera network nodes.
+native transactions or use Ethereum JSON-RPC calls sent to a Hedera JSON-RPC provider which then
+communicates with Hedera consensus and mirror nodes.
 
 In short, JSON-RPC is a type of API stucture, such as SOAP, gRPC, REST, GraphQL, etc. In the
 Hedera ecosystem, there are distinct concepts regarding JSON-RPC APIs to consider:
@@ -25,15 +25,12 @@ Hedera ecosystem, there are distinct concepts regarding JSON-RPC APIs to conside
 
 For more information see:
 
+- [Ethereum JSON-RPC Specification ](https://ethereum.github.io/execution-apis/api-documentation/)
+- [Hedera EVM: JSON-RPC relay](https://docs.hedera.com/hedera/core-concepts/smart-contracts/json-rpc-relay)
 - [Hedera Native: JSON-RPC spec](https://docs.reown.com/advanced/multichain/rpc-reference/hedera-rpc).
-- [Hedera EVM: JSON-RPC Relay](https://docs.hedera.com/hedera/core-concepts/smart-contracts/json-rpc-relay)
 - [@hashgraph/sdk](https://www.npmjs.com/package/@hashgraph/sdk)
 
 ## Getting started
-
-The following shows instructions for React though similar steps can be followed for other
-frameworks. You can also use the quickstart guide from Reown's AppKit to get started and update
-the code as referenced below.
 
 1. Follow one of the quickstart instructions at
    https://docs.reown.com/appkit/overview#quickstart
@@ -41,16 +38,14 @@ the code as referenced below.
 2. Add Hedera dependencies to your project:
 
 ```sh
-npm install @hashgraph/hedera-wallet-connect @hashgraph/sdk
+npm install file:../../hedera-wallet-connect @hashgraph/sdk @walletconnect/universal-provider
 ```
 
 3. Update `createAppKit` with adapters and a universal provider for Hedera. Note the
    HederaAdapter will need to come before the WagmiAdapter in the adapters array.
 
 ```typescript
-import { createAppKit } from '@reown/appkit'
-import { hedera, hederaTestnet} from '@reown/appkit/networks'
-import UniversalProvider from '@walletconnect/universal-provider'
+import type UniversalProvider from '@walletconnect/universal-provider'
 
 import {
   HederaProvider,
@@ -76,10 +71,9 @@ const hederaEVMAdapter = new HederaAdapter({
 })
 
 const universalProvider = (await HederaProvider.init({
-    projectId: "YOUR_PROJECT_ID", // this is a public projectId only to use on localhost
-    metadata,
-    //logger: 'debug', // optionally set log level
-  })) as unknown as UniversalProvider, // avoid type mismatch error due to missing of private properties in HederaProvider
+  projectId: "YOUR_PROJECT_ID"
+  metadata,
+})) as unknown as UniversalProvider, // avoid type mismatch error due to missing of private properties in HederaProvider
 
 // ...
 createAppKit({
@@ -130,5 +124,6 @@ createAppKit({
 
 ## Examples and Demos
 
-- [Example App](https://github.com/hgraph-io/hedera-app)
-- [Example Wallet](https://github.com/hgraph-io/hedera-wallet)
+- [Example App by Hgraph](https://github.com/hgraph-io/hedera-app)
+- [Example Wallet by Hgraph](https://github.com/hgraph-io/hedera-wallet)
+- [Hashgraph React Wallets by Buidler Labs](https://github.com/buidler-labs/hashgraph-react-wallets)
