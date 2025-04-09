@@ -35,18 +35,21 @@ The following shows instructions for React though similar steps can be followed 
 frameworks. You can also use the quickstart guide from Reown's AppKit to get started and update
 the code as referenced below.
 
-1. Install dependencies
+1. Follow one of the quickstart instructions at
+   https://docs.reown.com/appkit/overview#quickstart
+
+2. Add Hedera dependencies to your project:
 
 ```sh
-npm install @reown/appkit @walletconnect/universal-provider @hashgraph/hedera-wallet-connect
+npm install @hashgraph/hedera-wallet-connect @hashgraph/sdk
 ```
 
-2. Import this library's adapters and provider to be included in AppKit, the following uses
-   react as an example.
+3. Update `createAppKit` with adapters and a universal provider for Hedera. Note the
+   HederaAdapter will need to come before the WagmiAdapter in the adapters array.
 
 ```typescript
-import { createAppKit } from '@reown/appkit/react'
-import { hederaTestnet, hederaMainnet } from '@reown/appkit/networks'
+import { createAppKit } from '@reown/appkit'
+import { hedera, hederaTestnet} from '@reown/appkit/networks'
 import UniversalProvider from '@walletconnect/universal-provider'
 
 import {
@@ -56,33 +59,69 @@ import {
   hederaNamespace,
 } from '@hashgraph/hedera-wallet-connect'
 
-createAppKit({
-  adapters: [
-    new HederaAdapter({
-      projectId,
-      networks: [HederaChainDefinition.Native.Mainnet, HederaChainDefinition.Native.Testnet],
-      namespace: 'hedera',
-    }),
-    new HederaAdapter({
-      projectId,
-      networks: [hederaTestnet, hederaMainnet],
-      namespace: 'eip155',
-    }),
-  ],
-  //@ts-expect-error expected type error
-  universalProvider: (await HederaProvider.init({
-    projectId: "b56e18d47c72ab683b10814fe9495694" // this is a public projectId only to use on localhost
+const metadata = {
+  name: 'AppKit w/ Hedera',
+  description: 'Hedera AppKit Example',
+  url: 'https://example.com', // origin must match your domain & subdomain
+  icons: ['https://avatars.githubusercontent.com/u/179229932']
+}
+
+const hederaEVMAdapter = new HederaAdapter({
+  projectId,
+  networks: [
+    HederaChainDefinition.EVM.Mainnet,
+    HederaChainDefinition.EVM.Testnet,
+],
+  namespace: 'eip155',
+})
+
+const universalProvider = (await HederaProvider.init({
+    projectId: "YOUR_PROJECT_ID", // this is a public projectId only to use on localhost
     metadata,
     //logger: 'debug', // optionally set log level
   })) as unknown as UniversalProvider, // avoid type mismatch error due to missing of private properties in HederaProvider
-  defaultNetwork: HederaChainDefinition.Native.Mainnet,
+
+// ...
+createAppKit({
+  adapters: [ hederaEVMAdapter ],
+  //@ts-expect-error expected type error
+  universalProvider,
   projectId,
   metadata,
   networks: [
     // EVM
-    hederaMainnet,
-    hederaTestnet,
-    // Hedera Native
+    HederaChainDefinition.EVM.Mainnet,
+    HederaChainDefinition.EVM.Testnet,
+  ],
+})
+
+// ...
+```
+
+4. Recommended: Add Hedera Native WalletConnect Adapter
+
+```typescript
+import { HederaChainDefinition, hederaNamespace } from '@hashgraph/hedera-wallet-connect'
+
+// ...
+
+const hederaNativeAdapter = new HederaAdapter({
+  projectId,
+  networks: [HederaChainDefinition.Native.Mainnet, HederaChainDefinition.Native.Testnet],
+  namespace: hederaNamespace, // 'hedera' as CaipNamespace,
+})
+
+// ...
+
+createAppKit({
+  adapters: [hederaEVMAdapter, hederaNativeAdapter],
+  projectId,
+  metadata,
+  networks: [
+    // EVM
+    HederaChainDefinition.EVM.Mainnet,
+    HederaChainDefinition.EVM.Testnet,
+    // Native
     HederaChainDefinition.Native.Mainnet,
     HederaChainDefinition.Native.Testnet,
   ],
@@ -93,5 +132,3 @@ createAppKit({
 
 - [Example App](https://github.com/hgraph-io/hedera-app)
 - [Example Wallet](https://github.com/hgraph-io/hedera-wallet)
-
-## Migration Guide
