@@ -54,7 +54,10 @@ describe(Wallet.name, () => {
           testUserAccountId.toString(),
           privateKey,
         )
-        const respondSessionRequestSpy = jest.spyOn(wallet, 'respondSessionRequest')
+        const respondSessionRequestSpy = jest.spyOn(
+          wallet,
+          'respondSessionRequest',
+        ).mockReturnValue(undefined);
 
         try {
           await wallet.hedera_signMessage(id, topic, 'Hello Future', hederaWallet)
