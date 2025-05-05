@@ -65,6 +65,10 @@ describe('DAppConnector', () => {
   const mockTopic = '1234567890abcdef'
 
   beforeEach(async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      status: 500,
+    })
+
     connector = new DAppConnector(
       dAppMetadata,
       LedgerId.TESTNET,
@@ -75,7 +79,7 @@ describe('DAppConnector', () => {
       'off',
     )
     mockSignClient = await SignClient.init({
-      logger: 'error',
+      logger: 'fatal',
       relayUrl: 'wss://relay.walletconnect.com',
       projectId: projectId,
       metadata: dAppMetadata,
@@ -128,7 +132,7 @@ describe('DAppConnector', () => {
 
   describe('init', () => {
     it('should init SignClient correctly', async () => {
-      await connector.init({ logger: 'error' })
+      await connector.init({ logger: 'fatal' })
 
       expect(connector.walletConnectClient).toBeInstanceOf(SignClient)
       expect(connector.walletConnectClient?.metadata).toStrictEqual(dAppMetadata)
